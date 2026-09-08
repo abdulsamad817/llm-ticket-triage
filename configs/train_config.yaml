@@ -1,0 +1,50 @@
+model:
+  base_model: "Qwen/Qwen2.5-1.5B-Instruct"
+  max_seq_length: 512
+
+data:
+  raw_path: "data/raw/tickets.jsonl"
+  processed_dir: "data/processed"
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+  seed: 42
+
+schema:
+  fields: ["intent", "sentiment", "urgency", "category", "summary"]
+  intents: ["billing_dispute", "refund_request", "technical_issue", "shipping_delay", "account_access", "general_inquiry"]
+  sentiments: ["positive", "neutral", "negative"]
+  urgencies: ["low", "medium", "high"]
+  categories: ["billing", "technical", "shipping", "account", "other"]
+
+lora:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+  bias: "none"
+  task_type: "CAUSAL_LM"
+
+qlora:
+  load_in_4bit: true
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_compute_dtype: "bfloat16"
+  bnb_4bit_use_double_quant: true
+
+training:
+  output_dir: "outputs"
+  num_train_epochs: 3
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4
+  learning_rate: 2.0e-4
+  warmup_ratio: 0.03
+  logging_steps: 10
+  save_strategy: "epoch"
+  eval_strategy: "epoch"
+  report_to: "wandb"   
+  run_name: "ticket-triage-lora"
+
+evaluation:
+  batch_size: 8
+  generation_max_new_tokens: 128
+  methods: ["zero_shot", "few_shot", "lora", "qlora"]
