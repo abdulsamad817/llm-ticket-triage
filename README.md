@@ -552,7 +552,7 @@ The following components have been successfully tested:
 * Automated test suite
 * Data, evaluation, and inference test modules
 
-The complete training → evaluation → API pipeline has not yet been run end-to-end with a trained model in the current development environment.
+The complete training → evaluation → API pipeline has been successfully run end-to-end with a trained model in the development environment.
 
 ### Hardware requirements
 
