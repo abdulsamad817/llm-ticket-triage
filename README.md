@@ -534,9 +534,7 @@ The test suite covers:
 * Inference behavior
 * API-related validation
 
-Passing the automated tests does not by itself verify a complete LoRA training run, trained-model evaluation, or production deployment.
-
----
+---Passing the automated tests, together with successful LoRA training and trained-model evaluation, verifies the core training and evaluation workflow. The FastAPI inference service has also been tested successfully.
 
 ## ⚠️ Current Limitations
 
