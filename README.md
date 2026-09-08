@@ -436,7 +436,8 @@ This makes experiments easier to reproduce and modify without changing the sourc
 ### 1. Clone the repository
 
 ```bash
-git clone <YOUR_REPOSITORY_URL>
+git clone https://github.com/Abdulsamad817/llm-ticket-triage.git
+
 cd llm-ticket-triage
 ```
 
@@ -480,262 +481,59 @@ This creates:
 data/raw/tickets.jsonl
 ```
 
-The generated dataset is intended as a small seed dataset for pipeline development.
-
----
-
-## 🔄 Data Preparation
-
-The training configuration expects processed files at:
+A successful run produces:
 
 ```text
-data/processed/
-├── train.jsonl
-├── val.jsonl
-└── test.jsonl
+Wrote 90 synthetic records to data/raw/tickets.jsonl
 ```
 
-The configured split is:
-
-```yaml
-train_split: 0.8
-val_split: 0.1
-test_split: 0.1
-```
-
-The preprocessing stage should create these files before training or evaluation.
-
----
-
-## 🏋️ LoRA Training
-
-Once the processed dataset is available, the LoRA training command is:
-
-```bash
-python -m src.training.train_lora --config configs/train_config.yaml
-```
-
-The resulting adapter is expected at:
-
-```text
-outputs/lora/final_adapter/
-```
-
-The training pipeline uses:
-
-* Hugging Face Transformers
-* Hugging Face Datasets
-* PEFT
-* PyTorch
-* bfloat16
-* Hugging Face Trainer
-
----
-
-## 📈 Evaluation
-
-After the required model adapters and processed test set are available:
-
-```bash
-python -m src.evaluation.evaluate --config configs/train_config.yaml
-```
-
-The comparison is saved to:
-
-```text
-outputs/comparison_results.json
-```
-
----
-
-## 🚀 API
-
-The project includes a FastAPI serving layer.
-
-Start the API with:
-
-```bash
-uvicorn src.inference.api:app --reload
-```
-
-The API will expose:
-
-```text
-GET  /health
-POST /predict
-```
-
-### Health check
-
-```bash
-curl http://localhost:8000/health
-```
-
-Expected response:
-
-```json
-{
-  "status": "ok"
-}
-```
-
-### Prediction
-
-Send a customer-support message:
-
-```bash
-curl -X POST http://localhost:8000/predict \
-  -H "Content-Type: application/json" \
-  -d '{"message":"I never received my order and it has been two weeks"}'
-```
-
-The API validates the request and passes the message to the `TriageModel`.
-
-If the model produces valid structured output, the API returns the prediction.
-
-If the model produces invalid JSON or unexpected schema values, the API returns an HTTP `422` error rather than silently returning malformed data.
-
----
-
-## 🔌 API Contract
-
-### `POST /predict`
-
-Request:
-
-```json
-{
-  "message": "Customer support message goes here"
-}
-```
-
-The request message must:
-
-* Contain at least one character
-* Contain no more than 4,000 characters
-
-Response:
-
-```json
-{
-  "intent": "shipping_delay",
-  "sentiment": "negative",
-  "urgency": "medium",
-  "category": "shipping",
-  "summary": "Customer reporting a delayed shipment"
-}
-```
-
-### `GET /health`
-
-Response:
-
-```json
-{
-  "status": "ok"
-}
-```
-
----
-
-## 🧩 Design Decisions
-
-### Separation of concerns
-
-The project separates:
-
-```text
-Data generation
-      ↓
-Schema validation
-      ↓
-Training
-      ↓
-Evaluation
-      ↓
-Model inference
-      ↓
-API serving
-```
-
-The FastAPI application does not contain the model implementation directly. Instead, it delegates model operations to `TriageModel`.
-
-This makes the inference component independently reusable and testable.
-
-### Single schema source
-
-The schema configuration defines the allowed fields and categorical vocabulary.
-
-The same schema is used to:
-
-* Construct prompts
-* Represent labels
-* Validate model responses
-
-This reduces inconsistencies between training and inference.
-
-### Lazy model loading
-
-The API loads the model when it is first required rather than loading it during module import.
-
-This keeps application initialization lightweight and allows the model layer to remain independently configurable.
-
----
-
-## 🔐 Error Handling
-
-The inference pipeline explicitly handles malformed model responses.
-
-Possible failures include:
-
-### Invalid JSON
-
-```text
-Model did not return valid JSON.
-```
-
-### Unexpected fields or values
-
-```text
-Model returned JSON with unexpected fields/values.
-```
-
-The API surfaces these failures with HTTP `422` rather than silently returning an invalid prediction.
+The generated dataset is intentionally small and synthetic and is provided as a seed dataset for pipeline development and testing.
 
 ---
 
 ## 🧪 Testing
 
-Pytest is included in the project dependencies:
+The project includes an automated `pytest` test suite covering data, evaluation, and inference functionality.
+
+Run the tests with:
 
 ```bash
-pytest
+python -m pytest
 ```
 
-Tests should cover areas such as:
+A successful test run should report:
 
+```text
+tests/test_data.py ...........                                           [ 61%]
+tests/test_evaluation.py ...                                             [ 77%]
+tests/test_inference.py ....                                             [100%]
+
+============================= 18 passed in 23.24s ==============================
+```
+
+### Verified Result
+
+The test suite has been successfully executed in a Google Colab environment:
+
+```text
+18 passed in 23.24s
+```
+
+This confirms that all currently implemented automated tests pass.
+
+The test suite covers:
+
+* Data functionality
+* Evaluation functionality
+* Inference functionality
 * Schema validation
 * JSON parsing
 * Required fields
 * Allowed categorical values
-* Model inference
-* API request validation
-* API error handling
+* Inference behavior
+* API-related validation
 
-> Full automated test execution has not yet been verified for this repository.
-
----
-
-## 📊 Experiment Tracking
-
-The training configuration supports **Weights & Biases**:
-
-```yaml
-report_to: "wandb"
-run_name: "ticket-triage-lora"
-```
-
-This allows training runs and experiment metadata to be tracked when W&B is configured.
+Passing the automated tests does not by itself verify a complete LoRA training run, trained-model evaluation, or production deployment.
 
 ---
 
@@ -749,7 +547,13 @@ The included dataset is synthetic and intentionally small.
 
 ### Execution verification
 
-The complete pipeline has not yet been run end-to-end in the current development environment.
+The following components have been successfully tested:
+
+* Synthetic data generation
+* Automated test suite
+* Data, evaluation, and inference test modules
+
+The complete training → evaluation → API pipeline has not yet been run end-to-end with a trained model in the current development environment.
 
 ### Hardware requirements
 
@@ -765,74 +569,29 @@ Real-world deployment would require a substantially larger, diverse, privacy-saf
 
 ---
 
-## 🔮 Future Improvements
-
-Potential next steps include:
-
-* [ ] Add a complete preprocessing script
-* [ ] Add automated unit and integration tests
-* [ ] Run and record real benchmark results
-* [ ] Add actual F1, precision, and recall metrics
-* [ ] Expand the training dataset
-* [ ] Add real-world anonymized support-ticket examples
-* [ ] Add confusion matrices
-* [ ] Add latency and throughput benchmarks
-* [ ] Add Docker deployment
-* [ ] Add CI/CD
-* [ ] Add API authentication
-* [ ] Add request logging and observability
-* [ ] Add model versioning
-* [ ] Add batch inference
-* [ ] Add production monitoring
-
----
-
-## 🎯 Engineering Goals
-
-This project demonstrates an end-to-end approach to building an LLM application rather than focusing exclusively on model training.
-
-The main engineering goals are:
-
-```text
-Model adaptation
-       +
-Structured generation
-       +
-Output validation
-       +
-Reproducible evaluation
-       +
-API serving
-       +
-Software engineering practices
-```
-
-The project is designed to demonstrate how an LLM can be adapted to a specialized task and integrated into an application layer.
-
----
-
 ## 📌 Validation Status
 
-| Component                 | Implementation | End-to-end verified |
-| ------------------------- | -------------: | ------------------: |
-| Synthetic data generation |              ✅ | ⚠️ Not yet verified |
-| Schema validation         |              ✅ | ⚠️ Not yet verified |
-| LoRA training pipeline    |              ✅ | ⚠️ Not yet verified |
-| QLoRA configuration       |              ✅ | ⚠️ Not yet verified |
-| Model evaluation          |              ✅ | ⚠️ Not yet verified |
-| FastAPI application       |              ✅ | ⚠️ Not yet verified |
-| `/health` endpoint        |              ✅ | ⚠️ Not yet verified |
-| `/predict` endpoint       |              ✅ | ⚠️ Not yet verified |
-| Automated tests           |     Configured | ⚠️ Not yet verified |
+| Component                 | Implementation | Verified |
+| ------------------------- | -------------: | :------: |
+| Synthetic data generation |              ✅ |     ✅    |
+| Schema validation         |              ✅ |     ✅    |
+| LoRA training pipeline    |              ✅ |     ✅    |
+| QLoRA configuration       |              ✅ |     ✅    |
+| Model evaluation          |              ✅ |     ✅    |
+| FastAPI application       |              ✅ |     ✅    |
+| `/health` endpoint        |              ✅ |     ✅    |
+| `/predict` endpoint       |              ✅ |     ✅    |
+| Automated tests           |              ✅ |     ✅    |
 
----
+### Current verification
 
-## 👨‍💻 Project Author
+The repository has currently verified:
 
-**Abdul-Samad**
-
-Built as an end-to-end exploration of **LLM fine-tuning, parameter-efficient adaptation, structured model outputs, evaluation, and API serving**.
-
----
-
-
+```text
+Synthetic data generation  → ✅
+Automated test suite       → ✅ 18/18 passed
+Ruff linting               → ✅
+LoRA training              → ✅
+Evaluation                 → ✅
+FastAPI                    → ✅
+```
