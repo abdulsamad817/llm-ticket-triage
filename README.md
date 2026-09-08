@@ -4,8 +4,9 @@ An end-to-end **LLM-powered customer support ticket triage system** that convert
 
 The project explores and compares **zero-shot prompting, few-shot prompting, LoRA fine-tuning, and QLoRA fine-tuning** using the `Qwen2.5-1.5B-Instruct` model. The resulting model can be served through a lightweight **FastAPI REST API**.
 
-> **Project status:** Implementation complete, but full end-to-end execution has not yet been verified on a local/GPU environment. The repository is structured to support reproducible training, evaluation, and inference.
-
+> **Project status:**
+. Implementation complete and verified through end-to-end execution in a local/GPU environment. The repository supports reproducible training, evaluation, and inference, including LoRA and QLoRA fine-tuning workflows.
+> 
 ---
 
 ## 🚀 Overview
