@@ -10,7 +10,6 @@ Usage:
 
 import argparse
 
-import yaml
 import torch
 from datasets import load_dataset
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
@@ -18,13 +17,13 @@ from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
     BitsAndBytesConfig,
-    TrainingArguments,
-    Trainer,
     DataCollatorForLanguageModeling,
+    Trainer,
+    TrainingArguments,
 )
 
 from src.data.schema import SchemaValidator
-from src.training.train_lora import build_training_text, tokenize_function, load_config
+from src.training.train_lora import build_training_text, load_config, tokenize_function
 
 
 def main(config_path: str) -> None:

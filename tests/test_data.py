@@ -2,9 +2,8 @@ import json
 
 import pytest
 
-from src.data.schema import SchemaValidator, TicketLabel
 from src.data.prepare_dataset import clean_record, split_records
-
+from src.data.schema import SchemaValidator, TicketLabel
 
 SCHEMA_CONFIG = {
     "fields": ["intent", "sentiment", "urgency", "category", "summary"],

@@ -1,7 +1,6 @@
 from src.data.schema import SchemaValidator
 from src.evaluation.evaluate import score_predictions
 
-
 SCHEMA_CONFIG = {
     "fields": ["intent", "sentiment", "urgency", "category", "summary"],
     "intents": ["billing_dispute", "refund_request"],

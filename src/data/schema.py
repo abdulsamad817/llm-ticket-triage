@@ -1,6 +1,5 @@
-from dataclasses import dataclass
-from typing import Optional
 import json
+from dataclasses import dataclass
 
 
 @dataclass
@@ -36,7 +35,7 @@ class SchemaValidator:
             "category": set(schema_config["categories"]),
         }
 
-    def parse(self, raw_output: str) -> Optional[dict]:
+    def parse(self, raw_output: str) -> dict | None:
         """
         Attempts to parse a raw model output string into a dict.
         Returns None if it isn't valid JSON — callers should treat that as a

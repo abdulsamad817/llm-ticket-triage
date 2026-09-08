@@ -15,7 +15,6 @@ import json
 import random
 from pathlib import Path
 
-
 TEMPLATES = [
     ("billing_dispute", "negative", "high", "billing",
      ["I've been charged twice for the same order and nobody is responding",
@@ -76,8 +75,7 @@ def main(out_path: str = "data/raw/tickets.jsonl") -> None:
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     with open(out, "w") as f:
-        for record in records:
-            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+        f.writelines(json.dumps(record, ensure_ascii=False) + "\n" for record in records)
     print(f"Wrote {len(records)} synthetic records to {out_path}")
     print("NOTE: this is a small synthetic seed set for pipeline testing. "
           "Replace with real/larger data before trusting the metrics.")

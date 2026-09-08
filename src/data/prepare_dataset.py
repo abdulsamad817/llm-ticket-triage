@@ -5,8 +5,6 @@ from pathlib import Path
 
 import yaml
 
-from src.data.schema import TicketLabel
-
 
 def load_config(config_path: str) -> dict:
     with open(config_path, "r") as f:
@@ -60,8 +58,7 @@ def split_records(records: list[dict], config: dict) -> dict[str, list[dict]]:
 def write_jsonl(records: list[dict], out_path: Path) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w") as f:
-        for record in records:
-            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+        f.writelines(json.dumps(record, ensure_ascii=False) + "\n" for record in records)
 
 
 def main(config_path: str = "configs/train_config.yaml") -> None:

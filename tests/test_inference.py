@@ -9,7 +9,6 @@ from fastapi.testclient import TestClient
 
 from src.inference.api import app
 
-
 client = TestClient(app)
 
 

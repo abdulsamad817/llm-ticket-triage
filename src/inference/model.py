@@ -6,10 +6,10 @@ testable and independently reusable (e.g. from a batch script).
 
 from pathlib import Path
 
-import yaml
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+import yaml
 from peft import PeftModel
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from src.data.schema import SchemaValidator
 

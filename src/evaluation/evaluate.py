@@ -11,13 +11,12 @@ import json
 import time
 from pathlib import Path
 
-import yaml
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+import yaml
 from peft import PeftModel
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from src.data.schema import SchemaValidator, TicketLabel
-
+from src.data.schema import SchemaValidator
 
 FEW_SHOT_EXAMPLES = [
     {
@@ -94,7 +93,7 @@ def score_predictions(predictions: list[dict | None], gold_records: list[dict], 
         if all_correct:
             exact_match_count += 1
 
-    field_f1 = {field: field_correct[field] / total for field, count in field_correct.items()}
+    field_f1 = {field: count / total for field, count in field_correct.items()}
     avg_field_f1 = sum(field_f1.values()) / len(field_f1)
 
     return {
