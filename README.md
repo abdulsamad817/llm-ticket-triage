@@ -437,7 +437,7 @@ This makes experiments easier to reproduce and modify without changing the sourc
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Abdulsamad817/llm-ticket-triage.git
+git clone https://github.com/async-cipher-99/llm-ticket-triage.git
 
 cd llm-ticket-triage
 ```
